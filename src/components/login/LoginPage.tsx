@@ -1,36 +1,110 @@
+/////////////// todo any should change on fetching user data
+
 import React, { useState } from "react";
 import { Link2, AlertCircle } from "lucide-react";
-import { type User } from "../types";
-import { loginSchema, signupSchema } from "../utils/validation";
+import { loginSchema, signupSchema } from "../../utils/validation";
 import { motion, AnimatePresence } from "framer-motion";
+import { validateField } from "./validation";
+import { handleSubmit, resetForm } from "./operations";
+import { useMutation } from "@tanstack/react-query";
+import { loginAuthentication, signUpUser } from "../../api";
+import { handleAlert } from "../../utils/alert/SweeAlert";
+import type { LoginResponse } from "../../types";
+import { useNavigate } from "react-router-dom";
+import { enqueueSnackbar } from "notistack";
 
-interface LoginPageProps {
-  onLogin: (user: User) => void;
-}
-
-export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
+export const LoginPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [phone, setPhoneNumber] = useState<string>("");
   const [errors, setErrors] = useState<Record<string, string | null>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
+  const navigate = useNavigate();
   const currentSchema = isLogin ? loginSchema : signupSchema;
-
-  const validateField = (field: string, value: string): string | null => {
-    if (field in currentSchema) {
-      console.log(field);
-      const result = (currentSchema as any)[field].safeParse(value);
-      return result.success ? null : result.error!.issues[0].message;
-    }
-    return null;
-  };
-
+  const loginMutaion = useMutation({
+    mutationFn: (data: { username: string; password: string }) =>
+      loginAuthentication({ data }),
+    onSuccess: (response: LoginResponse) => {
+      if ("success" in response && response.success) {
+        localStorage.setItem("userToken", response.accessTokens);
+        localStorage.setItem("userRefresh", response.accessTokens);
+        navigate("/dashboard", { state: { loggedIn: true } });
+      }
+    },
+    onError: (error: any) => {
+      if ("errorType" in error && "result" in error) {
+        if ("GereralError" in error.result[0]) {
+          handleAlert("error", error.result[0].GereralError);
+        } else if (
+          "errorType" in error &&
+          error["errorType"] === "fieldError" &&
+          "result" in error
+        ) {
+          (error.result as Record<string, string>[]).forEach((element) => {
+            Object.entries(element).forEach(([key, value]) => {
+              setErrors((prev) => ({ ...prev, [key]: value }));
+            });
+          });
+        } else if (
+          "errorType" in error &&
+          error["errorType"] === "fieldError" &&
+          "result" in error
+        ) {
+          (error.result as Record<string, string>[]).forEach((element) => {
+            Object.values(element).forEach((value) => {
+              handleAlert("error", value);
+            });
+          });
+        } else {
+          handleAlert("error", "unexpeted error");
+        }
+      }
+    },
+  });
+  const signupMutaion = useMutation({
+    mutationFn: (data: { email: string; password: string; phone: string }) =>
+      signUpUser({ data }),
+    onSuccess: (response: { success: boolean }) => {
+      if (response.success) {
+        setIsLogin(true);
+        resetForm({
+          setEmail,
+          setErrors,
+          setPassword,
+          setPhoneNumber,
+          setTouched,
+        });
+        enqueueSnackbar("Registraion completd", {
+          variant: "success",
+          anchorOrigin: {
+            vertical: "bottom",
+            horizontal: "right",
+          },
+        });
+      } else {
+        handleAlert("error", "internal servesr error");
+      }
+    },
+    onError: (error: any) => {
+      if ("errorType" in error && "result" in error) {
+        if ("GereralError" in error.result[0]) {
+          handleAlert("error", error.result[0].GereralError);
+        } else if ("errorType" in error && "result" in error) {
+          (error.result as Record<string, string>[]).forEach((element) => {
+            Object.entries(element).forEach(([key, value]) => {
+              setErrors((prev) => ({ ...prev, [key]: value }));
+            });
+          });
+        }
+      }
+    },
+  });
   const handleFieldChange = (field: string, value: string): void => {
     if (field === "email") setEmail(value);
     if (field === "password") setPassword(value);
-    if (field === "phoneNumber") setPhoneNumber(value);
+    if (field === "phone") setPhoneNumber(value);
 
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: null }));
@@ -39,63 +113,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
 
   const handleFieldBlur = (field: string, value: string): void => {
     setTouched((prev) => ({ ...prev, [field]: true }));
-    const error = validateField(field, value);
+    const error = validateField(field, value, currentSchema);
     setErrors((prev) => ({ ...prev, [field]: error }));
-  };
-
-  const validateForm = (): boolean => {
-    let userNameError: string | null = null;
-    let emailError: string | null = null;
-    let passwordError;
-    let phoneError = null;
-    if (isLogin) {
-      userNameError = validateField("username", email);
-      passwordError = validateField("password", password);
-    } else {
-      emailError = validateField("email", email);
-      console.log(emailError);
-      passwordError = validateField("password", password);
-      phoneError = validateField("phoneNumber", phoneNumber);
-    }
-    const newErrors = {
-      email: emailError,
-      password: passwordError,
-      phoneNumber: phoneError,
-      username: userNameError,
-    };
-    console.log(newErrors.username);
-    setErrors(newErrors);
-    setTouched({
-      email: true,
-      password: true,
-      phoneNumber: true,
-    });
-
-    return (
-      !emailError &&
-      !passwordError &&
-      !userNameError &&
-      (isLogin || !phoneError)
-    );
-  };
-
-  const resetForm = (): void => {
-    setEmail("");
-    setPassword("");
-    setPhoneNumber("");
-    setErrors({});
-    setTouched({});
-  };
-
-  const handleSubmit = (): void => {
-    if (!validateForm()) return;
-
-    const userData: User = {
-      email,
-      id: Date.now(),
-      ...(!isLogin && { phoneNumber }),
-    };
-    onLogin(userData);
   };
 
   const getInputClassName = (field: string): string => {
@@ -108,7 +127,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
   };
   const handleToggle = () => {
     setIsLogin(!isLogin);
-    resetForm();
+    resetForm({ setEmail, setPassword, setPhoneNumber, setErrors, setTouched });
   };
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
@@ -167,18 +186,16 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                 </label>
                 <input
                   type="tel"
-                  value={phoneNumber}
-                  onChange={(e) =>
-                    handleFieldChange("phoneNumber", e.target.value)
-                  }
-                  onBlur={(e) => handleFieldBlur("phoneNumber", e.target.value)}
-                  className={getInputClassName("phoneNumber")}
+                  value={phone}
+                  onChange={(e) => handleFieldChange("phone", e.target.value)}
+                  onBlur={(e) => handleFieldBlur("phone", e.target.value)}
+                  className={getInputClassName("phone")}
                   placeholder="Enter your phone number (e.g., +1234567890)"
                 />
-                {errors.phoneNumber && touched.phoneNumber && (
+                {errors.phone && touched.phone && (
                   <div className="flex items-center space-x-1 mt-1 text-red-600 text-sm">
                     <AlertCircle className="h-4 w-4" />
-                    <span>{errors.phoneNumber}</span>
+                    <span>{errors.phone}</span>
                   </div>
                 )}
               </div>
@@ -207,7 +224,19 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
 
             {/* Submit button */}
             <button
-              onClick={handleSubmit}
+              onClick={() =>
+                handleSubmit({
+                  isLogin,
+                  currentSchema,
+                  email,
+                  password,
+                  phone,
+                  setErrors,
+                  setTouched,
+                  loginMutaion,
+                  signupMutaion,
+                })
+              }
               className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors"
             >
               {isLogin ? "Login" : "Sign Up"}

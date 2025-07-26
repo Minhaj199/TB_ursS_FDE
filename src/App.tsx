@@ -1,54 +1,53 @@
-
+ ///////////////// remove demmi function dashboard route/////////
 
 // App.tsx
-import React, { useState } from 'react';
-import {type User,type UrlItem,type PageType } from './types'  
-import { LoginPage } from './components/LoginPage'; 
+import React from 'react';
+import { LoginPage } from './components/login/LoginPage'; 
 import { Dashboard } from './components/Dashboard'; 
-import { AnalyticsPage } from './components/AnalyticsPage'; 
+ 
+import { Routes, Route, useNavigate } from "react-router-dom";
+import { ProtectRouteUser, UnProtectRouteUser } from './utils/routeProtector';
 
 const App: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<PageType>('login');
-  const [user, setUser] = useState<User | null>({email:'minhaj@gmail.com',id:1});
-  const [selectedUrl, setSelectedUrl] = useState<UrlItem | null>(null);
-
-  const handleLogin = (userData: User): void => {
-    setUser(userData);
-    setCurrentPage('dashboard');
-  };
-
+  const navigate=useNavigate()
   const handleLogout = (): void => {
-    setUser(null);
-    setCurrentPage('login');
+    localStorage.clear()
+    navigate('/');
   };
+  return(
+   <Routes>
+    
+       <Route element={<UnProtectRouteUser/>}>
+      <Route path="/" element={<LoginPage/>} />
+      </Route>
+      <Route element={<ProtectRouteUser/>}>
+      <Route path="/dashboard" element={<Dashboard onViewAnalytics={()=>{}} onLogout={handleLogout}/>}/>
+      </Route>
+    </Routes>
+  )
 
-  const handleViewAnalytics = (url: UrlItem): void => {
-    setSelectedUrl(url);
-    setCurrentPage('analytics');
-  };
+  // const handleBackToDashboard = (): void => {
+  //   setCurrentPage('dashboard');
+  // };
 
-  const handleBackToDashboard = (): void => {
-    setCurrentPage('dashboard');
-  };
-
-  return (
-    <div>
-      {currentPage === 'login' && <LoginPage onLogin={handleLogin} />}
-      {currentPage === 'dashboard' && user && (
-        <Dashboard 
-          user={user}
-          onLogout={handleLogout}
-          onViewAnalytics={handleViewAnalytics}
-        />
-      )}
-      {currentPage === 'analytics' && (
-        <AnalyticsPage 
-          selectedUrl={selectedUrl}
-          onBackToDashboard={handleBackToDashboard}
-        />
-      )}
-    </div>
-  );
+  // return (
+  //   <div>
+  //     {currentPage === 'login' && <LoginPage onLogin={handleLogin} />}
+  //     {currentPage === 'dashboard' && user && (
+  //       <Dashboard 
+  //         user={user}
+  //         onLogout={handleLogout}
+  //         onViewAnalytics={handleViewAnalytics}
+  //       />
+  //     )}
+  //     {currentPage === 'analytics' && (
+  //       <AnalyticsPage 
+  //         selectedUrl={selectedUrl}
+  //         onBackToDashboard={handleBackToDashboard}
+  //       />
+  //     )}
+  //   </div>
+  // );
 };
 
 export default App;
