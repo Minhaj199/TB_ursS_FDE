@@ -20,7 +20,7 @@ export const UrlsList: React.FC<UrlsListProps> = ({ urls, onViewAnalytics }) => 
           </div>
         ) : (
           urls.map((url) => (
-            <div key={url.id} className="p-6 hover:bg-gray-50">
+            <div key={url._id} className="p-6 hover:bg-gray-50">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
@@ -33,7 +33,7 @@ export const UrlsList: React.FC<UrlsListProps> = ({ urls, onViewAnalytics }) => 
                       <span>Analytics</span>
                     </button>
                   </div>
-                  <p className="text-gray-600 text-sm truncate">{url.longUrl}</p>
+                  <p className="text-gray-600 text-sm truncate">{url.originalUrl}</p>
                   <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
                     <span className="flex items-center space-x-1">
                       <Calendar className="h-4 w-4" />

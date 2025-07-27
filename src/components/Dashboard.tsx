@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { type UrlItem, type User } from "../types";
+import { type IUrl, type UrlItem, type User } from "../types";
 import { Navbar } from "./Navbar";
 import { UrlCreationForm } from "./UrlCreationForm";
 import { UrlsList } from "./UrlsList";
 import { useLocation, useNavigate } from "react-router-dom";
 import { enqueueSnackbar } from "notistack";
+import { useMutation } from "@tanstack/react-query";
+import { createUrl } from "../api";
+import { request } from "../utils/axiosUtil";
 
 interface DashboardProps {
   onLogout: () => void;
@@ -20,6 +23,17 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   const location = useLocation();
   const navigate = useNavigate();
+  useEffect(()=>{
+    (async()=>{
+      alert('herer')
+      const fetchAllUrls:{urls:IUrl[]}=await request({url:'/api/fetch-urls'})
+      console.log(fetchAllUrls)
+      setUrls(fetchAllUrls.urls)
+    })()
+  },[])
+  useEffect(()=>{
+    console.log(urls)
+  },[urls])
   useEffect(() => {
     if (location.state?.loggedIn) {
       enqueueSnackbar("user logged successfully", {
@@ -35,6 +49,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
     setUrls([newUrl, ...urls]);
     setDailyUsage(dailyUsage + 1);
   };
+
+
+ 
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -14,14 +14,7 @@ export interface User {
   phone?: string;
 }
 
-export interface UrlItem {
-  id: number;
-  longUrl: string;
-  shortUrl: string;
-  clicks: number;
-  createdAt: string;
-  expiresAt: string;
-}
+
 
 export interface DailyClick {
   date: string;
@@ -103,3 +96,23 @@ export type LoginResponse = {
   refreshTokens: string;
   accessTokens: string;
 };
+
+export type CreateUrlFunction={success:true,shortUrl:string,expiresAt:Date}|{success:false,result:Record<string,string>[]}
+
+export interface IUrl {
+  _id:string
+  shortUrl: string;
+  clicks: number;
+  originalUrl:string
+  createdAt: string;
+  expiresAt: string;
+}
+
+export interface UrlItem {
+  _id: string;
+  originalUrl: string;
+  shortUrl: string;
+  clicks: number;
+  createdAt: string;
+  expiresAt: string;
+}

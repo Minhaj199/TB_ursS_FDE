@@ -1,20 +1,25 @@
-import React, { useState } from 'react';
-import { AlertCircle } from 'lucide-react';
-import {type UrlItem } from '../types';
-import { urlSchema } from '../utils/validation';
+import React, { useState } from "react";
+import { AlertCircle } from "lucide-react";
+import { type UrlItem } from "../types";
+import { urlSchema } from "../utils/validation";
+import { request } from "../utils/axiosUtil";
+import { createUrl } from "../api";
 
 interface UrlCreationFormProps {
   dailyUsage: number;
   onCreateUrl: (url: UrlItem) => void;
 }
 
-export const UrlCreationForm: React.FC<UrlCreationFormProps> = ({ dailyUsage, onCreateUrl }) => {
-  const [longUrl, setLongUrl] = useState<string>('');
-  const [urlError, setUrlError] = useState<string>('');
+export const UrlCreationForm: React.FC<UrlCreationFormProps> = ({
+  dailyUsage,
+  onCreateUrl,
+}) => {
+  const [longUrl, setLongUrl] = useState<string>("");
+  const [urlError, setUrlError] = useState<string>("");
   const [urlTouched, setUrlTouched] = useState<boolean>(false);
 
   const generateShortUrl = (): string => {
-    return 'ly.sh/' + Math.random().toString(36).substring(2, 8);
+    return "ly.sh/" + Math.random().toString(36).substring(2, 8);
   };
 
   const validateUrl = (url: string): string | null => {
@@ -25,40 +30,46 @@ export const UrlCreationForm: React.FC<UrlCreationFormProps> = ({ dailyUsage, on
   const handleUrlChange = (value: string): void => {
     setLongUrl(value);
     if (urlError) {
-      setUrlError('');
+      setUrlError("");
     }
   };
 
   const handleUrlBlur = (): void => {
     setUrlTouched(true);
     const error = validateUrl(longUrl);
-    setUrlError(error || '');
+    setUrlError(error || "");
   };
 
-  const handleCreateUrl = (): void => {
-    const error = validateUrl(longUrl);
-    setUrlError(error || '');
-    setUrlTouched(true);
-    
-    if (error || dailyUsage >= 100) return;
+  const handleCreateUrl = async ():Promise< void> => {
+    try {
+      const error = validateUrl(longUrl);
+      setUrlError(error || "");
+      setUrlTouched(true);
 
-    const newUrl: UrlItem = {
-      id: Date.now(),
-      longUrl,
-      shortUrl: generateShortUrl(),
-      clicks: Math.floor(Math.random() * 100),
-      createdAt: new Date().toISOString().split('T')[0],
-      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-    };
-
-    onCreateUrl(newUrl);
-    setLongUrl('');
-    setUrlError('');
-    setUrlTouched(false);
+      if (error || dailyUsage >= 100) return;
+      const createShortUrl = await createUrl({ url: longUrl as string });
+      if (createShortUrl.success) {
+        const newUrl: UrlItem = {
+          _id: Date.now().toLocaleString(),
+          originalUrl:longUrl,
+          shortUrl: createShortUrl.shortUrl,
+          clicks: 0,
+          createdAt: new Date().toISOString().split("T")[0],
+          expiresAt: new Date(createShortUrl.expiresAt).toLocaleDateString(),
+        };
+        onCreateUrl(newUrl);
+        setLongUrl("");
+        setUrlError("");
+        setUrlTouched(false);
+      }
+    } catch (error) {
+      
+    }
   };
 
   const getUrlInputClassName = (): string => {
-    const baseClass = "flex-1 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors";
+    const baseClass =
+      "flex-1 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors";
     if (urlError && urlTouched) {
       return `${baseClass} border-red-300 focus:ring-red-500`;
     }
@@ -67,7 +78,9 @@ export const UrlCreationForm: React.FC<UrlCreationFormProps> = ({ dailyUsage, on
 
   return (
     <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">Create Short URL</h2>
+      <h2 className="text-xl font-semibold text-gray-900 mb-4">
+        Create Short URL
+      </h2>
       <div className="space-y-3">
         <div className="flex gap-4">
           <input
@@ -80,7 +93,9 @@ export const UrlCreationForm: React.FC<UrlCreationFormProps> = ({ dailyUsage, on
           />
           <button
             onClick={handleCreateUrl}
-            disabled={dailyUsage >= 100 || !longUrl || (!!urlError && urlTouched)}
+            disabled={
+              dailyUsage >= 100 || !longUrl || (!!urlError && urlTouched)
+            }
             className="px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 disabled:bg-gray-400 transition-colors"
           >
             Shorten

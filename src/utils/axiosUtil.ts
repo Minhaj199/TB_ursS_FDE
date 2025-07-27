@@ -47,6 +47,7 @@ client.interceptors.response.use(
         response.headers["authorizationforuser"]
       );
     }
+    console.log(response)
     return response.data;
   },
   async (error) => {
