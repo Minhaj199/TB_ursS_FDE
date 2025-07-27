@@ -42,20 +42,15 @@ client.interceptors.request.use(
 client.interceptors.response.use(
   (response: AxiosResponse) => {
     if (response.headers["authorizationforuser"]) {
-      localStorage.setItem(
-        "userRefresh",
-        response.headers["authorizationforuser"]
+      localStorage.setItem("userRefresh",response.headers["authorizationforuser"]
       );
     }
-    console.log(response)
     return response.data;
   },
   async (error) => {
-    const originalRequest = {
-      ...error.config,
-      headers: { ...error.config.headers },
-    };
+    const originalRequest = error.config
     if (error.response?.status === 403 && !originalRequest._retry) {
+       originalRequest._retry = true;
       if (isRefreshing) {
         return new Promise((resolve) => {
           addRefreshSubscriber((newToken: string) => {
@@ -65,12 +60,12 @@ client.interceptors.response.use(
         });
       }
 
-      originalRequest._retry = true;
+     
       isRefreshing = true;
 
       try {
         const { data } = await axios.post(
-          `${import.meta.env.VITE_BACKENT_URL}/user/getNewToken`,
+          `${import.meta.env.VITE_BACKENT_URL}/api/generate-newtoken`,
           {
             refresh: localStorage.getItem("userRefresh"),
           }
@@ -83,12 +78,12 @@ client.interceptors.response.use(
           return client(originalRequest);
         }
       } catch {
+        isRefreshing=false
         handleAlert("error", "Session expired. Please login again.");
 
-        return Promise.reject(new Error("token expired"));
+        return Promise.reject(new Error("403"));
       }
     }
-
     if (error.response?.status === 401) {
       if ("errorType" in error.response.data) {
         throw {
@@ -117,9 +112,14 @@ export const request = async <T>(options: AxiosRequestConfig): Promise<T> => {
   try {
     return await client(options);
   } catch (error: any) {
+    const isCode=parseInt(error.message)
     if ("errorType" in error) {
       throw new AppError(error.message, error.errorType, error.result);
-    } else {
+    }else if(!isNaN(isCode)){
+      throw new Error('403')
+    }
+     else {
+
       throw new Error("unexpted error");
     }
   }

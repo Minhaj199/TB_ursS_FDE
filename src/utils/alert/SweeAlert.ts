@@ -80,9 +80,7 @@ export function simplePropt(actionFunction: () => void, titile: string) {
   }).then((result) => {
     if (result.isConfirmed) {
       actionFunction();
-      console.log("User confirmed!");
-    } else {
-      console.log("User cancelled.");
-    }
+     
+    } 
   });
 }

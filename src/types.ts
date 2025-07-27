@@ -93,8 +93,8 @@ export interface ResetFormProbs {
 //////////////login operation response /////
 export type LoginResponse = {
   success: boolean;
-  refreshTokens: string;
-  accessTokens: string;
+  refreshToken: string;
+  accessToken: string;
 };
 
 export type CreateUrlFunction={success:true,shortUrl:string,expiresAt:Date}|{success:false,result:Record<string,string>[]}

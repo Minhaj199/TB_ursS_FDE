@@ -1,6 +1,6 @@
 /////////////// todo any should change on fetching user data
 
-import React, { useState } from "react";
+import React, {  useState } from "react";
 import { Link2, AlertCircle } from "lucide-react";
 import { loginSchema, signupSchema } from "../../utils/validation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,15 +22,23 @@ export const LoginPage: React.FC = () => {
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   const navigate = useNavigate();
+ 
   const currentSchema = isLogin ? loginSchema : signupSchema;
   const loginMutaion = useMutation({
     mutationFn: (data: { username: string; password: string }) =>
       loginAuthentication({ data }),
     onSuccess: (response: LoginResponse) => {
       if ("success" in response && response.success) {
-        localStorage.setItem("userToken", response.accessTokens);
-        localStorage.setItem("userRefresh", response.accessTokens);
+        localStorage.setItem("userToken", response.accessToken);
+        localStorage.setItem("userRefresh", response.refreshToken);
         navigate("/dashboard", { state: { loggedIn: true } });
+              enqueueSnackbar("user logged successfully", {
+                variant: "success",
+                anchorOrigin: {
+                  vertical: "bottom",
+                  horizontal: "right",
+                },
+              });
       }
     },
     onError: (error: any) => {
@@ -47,16 +55,7 @@ export const LoginPage: React.FC = () => {
               setErrors((prev) => ({ ...prev, [key]: value }));
             });
           });
-        } else if (
-          "errorType" in error &&
-          error["errorType"] === "fieldError" &&
-          "result" in error
-        ) {
-          (error.result as Record<string, string>[]).forEach((element) => {
-            Object.values(element).forEach((value) => {
-              handleAlert("error", value);
-            });
-          });
+        
         } else {
           handleAlert("error", "unexpeted error");
         }

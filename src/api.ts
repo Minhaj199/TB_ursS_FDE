@@ -42,6 +42,7 @@ export const signUpUser = async ({
 };
 export const createUrl=async({url}:{url:string}):Promise<CreateUrlFunction>=>{
   try {
+    console.log('jsdfj')
     const urlData:{success:boolean,shortUrl:string,expiresAt:Date}=await request({
       url:'/api/generate-url',
       method:'POST',

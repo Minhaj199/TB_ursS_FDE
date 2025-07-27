@@ -7,7 +7,8 @@ const queryClient = new QueryClient();
 import { BrowserRouter } from "react-router-dom";
 import { SnackbarProvider} from 'notistack'
 createRoot(document.getElementById('root')!).render(
- 
+ <StrictMode>
+
    <QueryClientProvider client={queryClient}>
     <BrowserRouter>
     <SnackbarProvider autoHideDuration={3000}>
@@ -15,5 +16,7 @@ createRoot(document.getElementById('root')!).render(
     </SnackbarProvider>
     </BrowserRouter>
   </QueryClientProvider>
+ </StrictMode>
+
  
 )

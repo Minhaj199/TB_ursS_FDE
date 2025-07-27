@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { type IUrl, type UrlItem, type User } from "../types";
+import { type IUrl, type UrlItem } from "../types";
 import { Navbar } from "./Navbar";
 import { UrlCreationForm } from "./UrlCreationForm";
 import { UrlsList } from "./UrlsList";
-import { useLocation, useNavigate } from "react-router-dom";
-import { enqueueSnackbar } from "notistack";
-import { useMutation } from "@tanstack/react-query";
-import { createUrl } from "../api";
+
 import { request } from "../utils/axiosUtil";
+import { handleAlert } from "../utils/alert/SweeAlert";
+import { useNavigate } from "react-router-dom";
 
 interface DashboardProps {
   onLogout: () => void;
@@ -21,37 +20,32 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [urls, setUrls] = useState<UrlItem[]>([]);
   const [dailyUsage, setDailyUsage] = useState<number>(0);
 
-  const location = useLocation();
   const navigate = useNavigate();
-  useEffect(()=>{
-    (async()=>{
-      alert('herer')
-      const fetchAllUrls:{urls:IUrl[]}=await request({url:'/api/fetch-urls'})
-      console.log(fetchAllUrls)
-      setUrls(fetchAllUrls.urls)
-    })()
-  },[])
-  useEffect(()=>{
-    console.log(urls)
-  },[urls])
+
   useEffect(() => {
-    if (location.state?.loggedIn) {
-      enqueueSnackbar("user logged successfully", {
-        variant: "success",
-        anchorOrigin: {
-          vertical: "bottom",
-          horizontal: "right",
-        },
-      });
-    }
-  }, [location.state]);
+    (async () => {
+      try {
+        const fetchAllUrls: { urls: IUrl[]; dialyLimit: number } =
+          await request({ url: "/api/fetch-urls" });
+        setUrls(fetchAllUrls.urls);
+        setDailyUsage(fetchAllUrls.dialyLimit);
+      } catch (error: any) {
+        const isCode = parseInt(error.message);
+        if (!isNaN(isCode)) {
+          localStorage.clear();
+          navigate("/");
+          handleAlert("error", "session expired");
+        } else {
+          handleAlert("error", error.message || "internal error");
+        }
+      }
+    })();
+  }, []);
+
   const handleCreateUrl = (newUrl: UrlItem): void => {
     setUrls([newUrl, ...urls]);
     setDailyUsage(dailyUsage + 1);
   };
-
-
- 
 
   return (
     <div className="min-h-screen bg-gray-50">

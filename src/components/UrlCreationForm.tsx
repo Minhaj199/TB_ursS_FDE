@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { AlertCircle } from "lucide-react";
 import { type UrlItem } from "../types";
 import { urlSchema } from "../utils/validation";
-import { request } from "../utils/axiosUtil";
 import { createUrl } from "../api";
 
 interface UrlCreationFormProps {
@@ -18,9 +17,6 @@ export const UrlCreationForm: React.FC<UrlCreationFormProps> = ({
   const [urlError, setUrlError] = useState<string>("");
   const [urlTouched, setUrlTouched] = useState<boolean>(false);
 
-  const generateShortUrl = (): string => {
-    return "ly.sh/" + Math.random().toString(36).substring(2, 8);
-  };
 
   const validateUrl = (url: string): string | null => {
     const result = urlSchema.url.safeParse(url);

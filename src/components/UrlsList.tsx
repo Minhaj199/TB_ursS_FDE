@@ -14,12 +14,12 @@ export const UrlsList: React.FC<UrlsListProps> = ({ urls, onViewAnalytics }) => 
         <h2 className="text-xl font-semibold text-gray-900">Your URLs</h2>
       </div>
       <div className="divide-y">
-        {urls.length === 0 ? (
+        {Array.isArray(urls)&&urls.length === 0 ? (
           <div className="p-6 text-center text-gray-500">
             No URLs created yet. Create your first short URL above!
           </div>
         ) : (
-          urls.map((url) => (
+          urls?.map((url) => (
             <div key={url._id} className="p-6 hover:bg-gray-50">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
@@ -37,7 +37,7 @@ export const UrlsList: React.FC<UrlsListProps> = ({ urls, onViewAnalytics }) => 
                   <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
                     <span className="flex items-center space-x-1">
                       <Calendar className="h-4 w-4" />
-                      <span>Expires: {url.expiresAt}</span>
+                      <span>Expires: {new Date(url.expiresAt).toLocaleDateString()}</span>
                     </span>
                     <span className="flex items-center space-x-1">
                       <MousePointer className="h-4 w-4" />
