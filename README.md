@@ -1,8 +1,10 @@
 
 
-T# LINK SHORT – React Frontend
+# LINK SHORT – React Frontend
 
-# React + TypeScript + Vite
+### React + TypeScript + Vite
+![Dashboard Preview](./public/screenshots/dashboard.jpg)
+![Login Page](./public/screenshots/login.jpg)
 
 A **responsive URL shortener web application frontend** built with **React 19**, **TailwindCSS 4**, **MUI 7**, and **TanStack React Query 5**.  
 Users can **sign up and log in** via **email or phone**, create up to **100 short URLs per day**, and manage their URLs with **pagination, analytics, and responsive UI**.
