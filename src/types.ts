@@ -120,7 +120,6 @@ export interface UrlItem {
 
 export interface DashboardProps {
   onLogout: () => void;
-  onViewAnalytics: (url: UrlItem) => void;
 }
 export interface UrlsResponse {
   urls: IUrl[];
@@ -141,5 +140,4 @@ export interface UrlCreationFormProps {
 }
 export interface UrlsListProps {
   urls: UrlItem[];
-  onViewAnalytics: (url: UrlItem) => void;
 }

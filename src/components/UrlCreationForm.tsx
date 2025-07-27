@@ -4,7 +4,7 @@ import { type UrlItem } from "../types";
 import { urlSchema } from "../utils/validation";
 import { createUrl } from "../api";
 import { enqueueSnackbar } from "notistack";
-import type { UrlCreationFormProps } from "./login/validation";
+import type { UrlCreationFormProps } from "../types"; 
 
 export const UrlCreationForm: React.FC<UrlCreationFormProps> = ({
   dailyUsage,
