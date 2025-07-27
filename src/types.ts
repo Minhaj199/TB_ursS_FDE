@@ -115,4 +115,31 @@ export interface UrlItem {
   clicks: number;
   createdAt: string;
   expiresAt: string;
+
+}
+
+export interface DashboardProps {
+  onLogout: () => void;
+  onViewAnalytics: (url: UrlItem) => void;
+}
+export interface UrlsResponse {
+  urls: IUrl[];
+  dialyLimit: number;
+  totalUrl: number;
+}
+export interface NavbarProps {
+  title?: string;
+  dailyUsage?: number;
+  showBackButton?: boolean;
+  onBackClick?: () => void;
+  onLogout?: () => void;
+}
+
+export interface UrlCreationFormProps {
+  dailyUsage: number;
+  onCreateUrl: (url: UrlItem) => void;
+}
+export interface UrlsListProps {
+  urls: UrlItem[];
+  onViewAnalytics: (url: UrlItem) => void;
 }

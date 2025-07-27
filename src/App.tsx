@@ -1,6 +1,3 @@
-///////////////// remove demmi function dashboard route/////////
-
-// App.tsx
 import React from "react";
 import { LoginPage } from "./components/login/LoginPage";
 import { Dashboard } from "./components/Dashboard";
@@ -31,14 +28,13 @@ const App: React.FC = () => {
         <Route
           path="/dashboard"
           element={
-            <Dashboard onViewAnalytics={() => {}} onLogout={handleLogout} />
+            <Dashboard onLogout={handleLogout} />
           }
         />
       </Route>
     </Routes>
   );
 
-  // const handleBackToDashboard = (): void => {
   //   setCurrentPage('dashboard');
   // };
 

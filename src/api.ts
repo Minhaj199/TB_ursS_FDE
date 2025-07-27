@@ -1,5 +1,10 @@
 import { AppError } from "./customError";
-import { type CreateUrlFunction, type ILoginAuth, type ISignup, type LoginResponse } from "./types";
+import {
+  type CreateUrlFunction,
+  type ILoginAuth,
+  type ISignup,
+  type LoginResponse,
+} from "./types";
 import { request } from "./utils/axiosUtil";
 
 export const loginAuthentication = async ({
@@ -40,20 +45,28 @@ export const signUpUser = async ({
     }
   }
 };
-export const createUrl=async({url}:{url:string}):Promise<CreateUrlFunction>=>{
+export const createUrl = async ({
+  url,
+}: {
+  url: string;
+}): Promise<CreateUrlFunction> => {
   try {
-    console.log('jsdfj')
-    const urlData:{success:boolean,shortUrl:string,expiresAt:Date}=await request({
-      url:'/api/generate-url',
-      method:'POST',
-      data:{url}
-    })
-    return {success:true,shortUrl:urlData.shortUrl,expiresAt:urlData.expiresAt}
-  } catch (error:any) {
-    if('errorType' in error){
+    const urlData: { success: boolean; shortUrl: string; expiresAt: Date } =
+      await request({
+        url: "/api/generate-url",
+        method: "POST",
+        data: { url },
+      });
+    return {
+      success: true,
+      shortUrl: urlData.shortUrl,
+      expiresAt: urlData.expiresAt,
+    };
+  } catch (error: any) {
+    if ("errorType" in error) {
       throw new AppError(error.message, error.errorType, error.result);
-    }else{
-       throw new Error("unexpted error");
+    } else {
+      throw new Error("unexpted error");
     }
   }
-}
+};

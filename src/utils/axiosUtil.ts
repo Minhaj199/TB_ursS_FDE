@@ -42,15 +42,17 @@ client.interceptors.request.use(
 client.interceptors.response.use(
   (response: AxiosResponse) => {
     if (response.headers["authorizationforuser"]) {
-      localStorage.setItem("userRefresh",response.headers["authorizationforuser"]
+      localStorage.setItem(
+        "userRefresh",
+        response.headers["authorizationforuser"]
       );
     }
     return response.data;
   },
   async (error) => {
-    const originalRequest = error.config
+    const originalRequest = error.config;
     if (error.response?.status === 403 && !originalRequest._retry) {
-       originalRequest._retry = true;
+      originalRequest._retry = true;
       if (isRefreshing) {
         return new Promise((resolve) => {
           addRefreshSubscriber((newToken: string) => {
@@ -60,7 +62,6 @@ client.interceptors.response.use(
         });
       }
 
-     
       isRefreshing = true;
 
       try {
@@ -78,7 +79,7 @@ client.interceptors.response.use(
           return client(originalRequest);
         }
       } catch {
-        isRefreshing=false
+        isRefreshing = false;
         handleAlert("error", "Session expired. Please login again.");
 
         return Promise.reject(new Error("403"));
@@ -112,14 +113,12 @@ export const request = async <T>(options: AxiosRequestConfig): Promise<T> => {
   try {
     return await client(options);
   } catch (error: any) {
-    const isCode=parseInt(error.message)
+    const isCode = parseInt(error.message);
     if ("errorType" in error) {
       throw new AppError(error.message, error.errorType, error.result);
-    }else if(!isNaN(isCode)){
-      throw new Error('403')
-    }
-     else {
-
+    } else if (!isNaN(isCode)) {
+      throw new Error("403");
+    } else {
       throw new Error("unexpted error");
     }
   }

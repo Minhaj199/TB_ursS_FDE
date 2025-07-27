@@ -1,4 +1,3 @@
-// types/index.ts
 export interface User {
   id: number;
   email: string;
@@ -47,9 +46,9 @@ export interface ValidationField {
   _urlMessage?: string;
   _phone?: boolean;
   _phoneMessage?: string;
-   _userName?: boolean;
+  _userName?: boolean;
   _usernameMessage?: string;
-  userName:(message:string)=>ValidationField
+  userName: (message: string) => ValidationField;
   email: (message?: string) => ValidationField;
   min: (length: number, message?: string) => ValidationField;
   url: (message?: string) => ValidationField;
@@ -57,4 +56,4 @@ export interface ValidationField {
   safeParse: (value: string) => ValidationResult;
 }
 
-export type PageType = 'login' | 'dashboard' | 'analytics';
+export type PageType = "login" | "dashboard" | "analytics";

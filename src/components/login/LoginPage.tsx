@@ -1,6 +1,4 @@
-/////////////// todo any should change on fetching user data
-
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import { Link2, AlertCircle } from "lucide-react";
 import { loginSchema, signupSchema } from "../../utils/validation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,7 +20,7 @@ export const LoginPage: React.FC = () => {
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   const navigate = useNavigate();
- 
+
   const currentSchema = isLogin ? loginSchema : signupSchema;
   const loginMutaion = useMutation({
     mutationFn: (data: { username: string; password: string }) =>
@@ -32,13 +30,13 @@ export const LoginPage: React.FC = () => {
         localStorage.setItem("userToken", response.accessToken);
         localStorage.setItem("userRefresh", response.refreshToken);
         navigate("/dashboard", { state: { loggedIn: true } });
-              enqueueSnackbar("user logged successfully", {
-                variant: "success",
-                anchorOrigin: {
-                  vertical: "bottom",
-                  horizontal: "right",
-                },
-              });
+        enqueueSnackbar("user logged successfully", {
+          variant: "success",
+          anchorOrigin: {
+            vertical: "bottom",
+            horizontal: "right",
+          },
+        });
       }
     },
     onError: (error: any) => {
@@ -55,7 +53,6 @@ export const LoginPage: React.FC = () => {
               setErrors((prev) => ({ ...prev, [key]: value }));
             });
           });
-        
         } else {
           handleAlert("error", "unexpeted error");
         }

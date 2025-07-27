@@ -51,3 +51,6 @@ export const validateForm = ({
     !emailError && !passwordError && !userNameError && (isLogin || !phoneError)
   );
 };
+
+
+
