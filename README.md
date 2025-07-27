@@ -3,7 +3,7 @@
 # LINK SHORT – React Frontend
 
 ### React + TypeScript + Vite
-![Dashboard Preview](https://asset.cloudinary.com/dyomgcbln/559645ebbd381e6cad2201c21eaec2dc)
+![Dashboard Preview](https://res.cloudinary.com/dyomgcbln/image/upload/v1753647972/LINK%20SHORT/Screenshot_2025-07-28_014810_e24tqq.jpg)
 ![Login Page](https://asset.cloudinary.com/dyomgcbln/02974b27cdb69a54288f2faf03c07725)
 
 A **responsive URL shortener web application frontend** built with **React 19**, **TailwindCSS 4**, **MUI 7**, and **TanStack React Query 5**.  
