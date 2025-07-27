@@ -4,7 +4,7 @@
 
 ### React + TypeScript + Vite
 ![Dashboard Preview](https://res.cloudinary.com/dyomgcbln/image/upload/v1753647972/LINK%20SHORT/Screenshot_2025-07-28_014810_e24tqq.jpg)
-![Login Page](https://res.cloudinary.com/dyomgcbln/image/upload/v1753647972/LINK%20SHORT/Screenshot_2025-07-28_014810_e24tqq.jpg)
+![Login Page](https://res.cloudinary.com/dyomgcbln/image/upload/v1753647972/LINK%20SHORT/Screenshot_2025-07-28_015136_x1rizj.jpg)
 
 A **responsive URL shortener web application frontend** built with **React 19**, **TailwindCSS 4**, **MUI 7**, and **TanStack React Query 5**.  
 Users can **sign up and log in** via **email or phone**, create up to **100 short URLs per day**, and manage their URLs with **pagination, analytics, and responsive UI**.
