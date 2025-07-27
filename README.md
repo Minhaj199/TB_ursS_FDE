@@ -1,69 +1,72 @@
+
+
+T# LINK SHORT – React Frontend
+
 # React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A **responsive URL shortener web application frontend** built with **React 19**, **TailwindCSS 4**, **MUI 7**, and **TanStack React Query 5**.  
+Users can **sign up and log in** via **email or phone**, create up to **100 short URLs per day**, and manage their URLs with **pagination, analytics, and responsive UI**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- **Authentication**
+  - Sign up and log in using **email or phone**.
+  - JWT-based authentication (access + refresh tokens).
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **URL Shortening**
+  - Logged-in users can **create up to 100 short URLs per day**.
+  - Each URL is **automatically listed** on the dashboard.
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Dashboard**
+  - View all shortened URLs with **pagination**.
+  - Generate Short Urls.
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+- **Responsive UI**
+  - Built using **TailwindCSS 4** + **MUI 7** for a modern, clean interface.
+  - **Framer Motion** for animations.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- **State Management & API Handling**
+  - **TanStack React Query 5** for fetching, caching, and state synchronization.
+  - **Axios** with interceptors for token refresh.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- **Notifications & Alerts**
+  - **SweetAlert2** for modals.
+  - **Notistack** for snackbars.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Tech Stack
+
+- **React 19** + **React DOM 19**
+- **TailwindCSS 4** + **@mui/material 7** for UI
+- **Framer Motion 12** for animations
+- **TanStack React Query 5** for data fetching
+- **Axios 1.11** for API calls
+- **React Router DOM 7** for routing
+- **Notistack 3** & **SweetAlert2** for notifications
+- **Lucide-React** for icons
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Node.js >= 20
+- pnpm >= 10 (preferred) or npm/yarn
+### Installation
+VITE_BACKENT_URL=''
+VITE_DAILY_LIMIT=''
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/Minhaj199/TB_ursS_FDE.git
+cd TB_ursS_FDE
+
+# Install dependencies
+pnpm install
+# or
+npm install
+# or
+yarn install
