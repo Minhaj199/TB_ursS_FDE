@@ -1,32 +1,36 @@
-import React, { useState } from "react";
-import { type DashboardProps, type IUrl, type UrlsResponse } from "../types";
-import { Navbar } from "./Navbar";
-import { UrlCreationForm } from "./UrlCreationForm";
-import { UrlsList } from "./UrlsList";
-
-import { request } from "../utils/axiosUtil";
-import { handleAlert } from "../utils/alert/SweeAlert";
+import React, { useEffect, useState } from "react";
+import { type DashboardProps, type IUrl, type UrlsResponse } from "../../types";
+import { Navbar } from "../../components/Navbar";
+import { UrlCreationForm } from "../../components/UrlCreationForm"; 
+import { UrlsList } from "../../components/UrlsList"; 
+import { request } from "../../utils/axiosUtil";
+import { handleAlert } from "../../utils/alert/SweeAlert";
 import { useNavigate } from "react-router-dom";
 import { Pagination } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 
 export const Dashboard: React.FC<DashboardProps> = ({
   onLogout,
+  authenticated
 }) => {
+  useEffect(()=>{
+    if(!authenticated){
+      navigate('/')
+    }
+  },[authenticated])
   const [dailyUsage, setDailyUsage] = useState<number>(0);
   const [page, setPage] = useState(1);
   const limit = 4;
-
   async function fetchUrl(page: number, limit: number): Promise<UrlsResponse> {
     const fetchAllUrls: { urls: IUrl[]; dialyLimit: number; totalUrl: number } =
-      await request({ url: `/api/fetch-urls?page=${page}&limit=${limit}` });
-    return fetchAllUrls;
+      await request({ url: `/api/fetch-urls?page=${page}&limit=${limit}`,headers:{'Content-Type':'application/json'},withCredentials:true});
+      return fetchAllUrls;
   }
   const { data, isError, error, refetch } = useQuery<UrlsResponse, Error>({
     queryKey: ["urls", page],
     queryFn: () => fetchUrl(page, limit),
   });
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
 
   const totalPage = Math.ceil((data?.totalUrl || 0) / limit);
 

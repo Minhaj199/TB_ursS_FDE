@@ -1,41 +1,41 @@
 import React from "react";
-import { LoginPage } from "./components/login/LoginPage";
-import { Dashboard } from "./components/Dashboard";
+import { LoginPage } from "./pages/login/LoginPage";
+import { Dashboard } from "./pages/dashboard/Dashboard";
 
 import { Routes, Route, useNavigate } from "react-router-dom";
-import { ProtectRouteUser, UnProtectRouteUser } from "./utils/routeProtector";
+import { ProtectRouteUser } from "./utils/routeProtector";
 import { enqueueSnackbar } from "notistack";
+import { request } from "./utils/axiosUtil";
+import { useAuth } from "./contexApi";
 
 const App: React.FC = () => {
   const navigate = useNavigate();
-  const handleLogout = (): void => {
-    localStorage.clear();
-    navigate("/");
-    enqueueSnackbar("user logged out", {
+  const {authenticated,setIsAuthenticated}=useAuth()
+  const handleLogout = async(): Promise<void >=> {
+    
+   const result:{success:boolean}= await request({url:'/api/signout',method:'post',headers:{'Content-Type':'application/json'},withCredentials:true})
+   if(result.success){
+      enqueueSnackbar("user logged out", {
       variant: "info",
       anchorOrigin: {
         vertical: "bottom",
         horizontal: "right",
       },
     });
+    setIsAuthenticated(false)
+    navigate("/");
+   }
+ 
   };
   return (
     <Routes>
-      <Route element={<UnProtectRouteUser />}>
-        <Route path="/" element={<LoginPage />} />
-      </Route>
-      <Route element={<ProtectRouteUser />}>
-        <Route
-          path="/dashboard"
-          element={
-            <Dashboard onLogout={handleLogout} />
-          }
-        />
-      </Route>
+      
+        <Route path="/" element={<LoginPage authenticated={authenticated} />} />
+      
+      <Route path="/dashboard" element={<ProtectRouteUser><Dashboard authenticated={authenticated} onLogout={handleLogout}/></ProtectRouteUser>} />
     </Routes>
   );
 
-  //   setCurrentPage('dashboard');
   // };
 
   // return (

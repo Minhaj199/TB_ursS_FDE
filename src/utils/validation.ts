@@ -45,7 +45,7 @@ export const z = {
       } else {
         if (this._userName) {
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          const isPhone = /^\+?[0-9]{7,15}$/;
+          const isPhone = /^[\+]?[1-9][\d]{0,15}$|^[\+]?[(]?[\d\s\-\(\)]{10,}$/;
 
           if (!emailRegex.test(value) && !isPhone.test(value)) {
             errors.push(this._usernameMessage || "Invalid email address");

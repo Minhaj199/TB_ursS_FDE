@@ -1,20 +1,11 @@
-import { Outlet,Navigate } from "react-router-dom";
-export function ProtectRouteUser(){
-  let setIsAuthorised = false;
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../contexApi";
+import type React from "react";
 
-  const token = localStorage.getItem("userToken");
-  if (token && typeof token === "string") {
-    setIsAuthorised = true;
-  }
-  return setIsAuthorised ?<Outlet />:<Navigate to="/"/>;
+export const ProtectRouteUser: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { authenticated } = useAuth();
+
+  if (!authenticated) return <Navigate to="/" replace/>;
+  return children
 };
-export const UnProtectRouteUser: React.FC = () => {
-  let setIsAuthorised = false;
 
-  const token = localStorage.getItem("userToken");
-  if (token && typeof token === "string") {
-    setIsAuthorised = true;
-  }
-
-  return setIsAuthorised ? <Navigate to="/dashboard" /> : <Outlet/>;
-};

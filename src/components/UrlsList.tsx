@@ -32,7 +32,6 @@ export const UrlsList: React.FC<UrlsListProps> = ({
                     <button
                       className="flex items-center space-x-1 text-sm text-gray-600 hover:text-indigo-600"
                     >
-                      <span>Analytics</span>
                     </button>
                   </div>
                   <p className="text-gray-600 text-sm truncate">

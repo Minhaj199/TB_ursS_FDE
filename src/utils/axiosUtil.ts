@@ -11,42 +11,28 @@ const client = axios.create({
 });
 
 let isRefreshing = false;
-let refreshSubscribers: ((token: string) => void)[] = [];
+let refreshSubscribers: (() => void)[] = [];
 
-const onTokenRefreshed = (token: string) => {
-  refreshSubscribers.forEach((callback) => callback(token));
+const onTokenRefreshed = () => {
+  refreshSubscribers.forEach((callback) => callback());
   refreshSubscribers = [];
 };
 
-const addRefreshSubscriber = (callback: (token: string) => void) => {
+const addRefreshSubscriber = (callback: () => void) => {
   refreshSubscribers.push(callback);
 };
 
 // Request Interceptor
 client.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const userToken = localStorage.getItem("userToken");
-    const refresh = localStorage.getItem("userRefresh");
-    if (userToken) {
-      config.headers["AuthForUser"] = userToken;
-      if (refresh) {
-        config.headers["RefreshAuthForUser"] = refresh;
-      }
-    }
     return config;
   },
   (error) => Promise.reject(error)
 );
-
 // Response Interceptor
 client.interceptors.response.use(
   (response: AxiosResponse) => {
-    if (response.headers["authorizationforuser"]) {
-      localStorage.setItem(
-        "userRefresh",
-        response.headers["authorizationforuser"]
-      );
-    }
+    
     return response.data;
   },
   async (error) => {
@@ -55,8 +41,7 @@ client.interceptors.response.use(
       originalRequest._retry = true;
       if (isRefreshing) {
         return new Promise((resolve) => {
-          addRefreshSubscriber((newToken: string) => {
-            originalRequest.headers["AuthForUser"] = newToken;
+          addRefreshSubscriber(() => {
             resolve(client(originalRequest));
           });
         });
@@ -65,17 +50,10 @@ client.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const { data } = await axios.post(
-          `${import.meta.env.VITE_BACKENT_URL}/api/generate-newtoken`,
-          {
-            refresh: localStorage.getItem("userRefresh"),
-          }
-        );
-        if (data?.token) {
-          localStorage.setItem("userToken", data.token);
-          onTokenRefreshed(data.token);
+        const { data }= await axios.post(`${import.meta.env.VITE_BACKENT_URL}api/generate-newtoken`,{},{headers:{'Content-Type': 'application/json'}, withCredentials: true});
+        if ('success' in data&&data.success===true) {
           isRefreshing = false;
-          originalRequest.headers["AuthForUser"] = data.token;
+          onTokenRefreshed();
           return client(originalRequest);
         }
       } catch {
@@ -83,6 +61,8 @@ client.interceptors.response.use(
         handleAlert("error", "Session expired. Please login again.");
 
         return Promise.reject(new Error("403"));
+      }finally{
+        isRefreshing = false
       }
     }
     if (error.response?.status === 401) {
@@ -93,7 +73,6 @@ client.interceptors.response.use(
           result: error.response.data.result,
         };
       } else {
-        localStorage.removeItem("adminToken");
         return Promise.reject(new Error("Admin token expired."));
       }
     }

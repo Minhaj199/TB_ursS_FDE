@@ -120,6 +120,7 @@ export interface UrlItem {
 
 export interface DashboardProps {
   onLogout: () => void;
+  authenticated:boolean
 }
 export interface UrlsResponse {
   urls: IUrl[];

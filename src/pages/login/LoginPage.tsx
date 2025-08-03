@@ -1,35 +1,38 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link2, AlertCircle } from "lucide-react";
 import { loginSchema, signupSchema } from "../../utils/validation";
 import { motion, AnimatePresence } from "framer-motion";
 import { validateField } from "./validation";
-import { handleSubmit, resetForm } from "./operations";
+import { handleSubmit, loginAuthentication, resetForm, signUpUser } from "./operations";
 import { useMutation } from "@tanstack/react-query";
-import { loginAuthentication, signUpUser } from "../../api";
 import { handleAlert } from "../../utils/alert/SweeAlert";
 import type { LoginResponse } from "../../types";
 import { useNavigate } from "react-router-dom";
 import { enqueueSnackbar } from "notistack";
+import { useAuth } from "../../contexApi";
 
-export const LoginPage: React.FC = () => {
+export const LoginPage: React.FC <{authenticated:boolean}>= ({authenticated}) => {
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [phone, setPhoneNumber] = useState<string>("");
   const [errors, setErrors] = useState<Record<string, string | null>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
-
+  const {setIsAuthenticated} =useAuth() 
   const navigate = useNavigate();
-
+  useEffect(()=>{
+    if(authenticated){
+    navigate('/dashboard')
+  }
+  },[authenticated])
   const currentSchema = isLogin ? loginSchema : signupSchema;
   const loginMutaion = useMutation({
     mutationFn: (data: { username: string; password: string }) =>
       loginAuthentication({ data }),
     onSuccess: (response: LoginResponse) => {
       if ("success" in response && response.success) {
-        localStorage.setItem("userToken", response.accessToken);
-        localStorage.setItem("userRefresh", response.refreshToken);
-        navigate("/dashboard", { state: { loggedIn: true } });
+        setIsAuthenticated(true)
+         navigate("/dashboard");
         enqueueSnackbar("user logged successfully", {
           variant: "success",
           anchorOrigin: {
@@ -144,7 +147,7 @@ export const LoginPage: React.FC = () => {
             className="space-y-6"
           >
             {/* Email Field */}
-            <div>
+            <div >
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Email
               </label>
