@@ -1,5 +1,4 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import { request } from "./utils/axiosUtil";
 import axios from "axios";
 
 interface AuthContextType {
