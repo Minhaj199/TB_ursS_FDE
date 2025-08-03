@@ -17,7 +17,7 @@ export function AuthenticationContext({ children }: { children: React.ReactNode 
 
   const checkAuth = async () => {
     try {
-        const { data }= await axios.post(`${import.meta.env.VITE_BACKENT_URL}api/generate-newtoken`,{},{headers:{'Content-Type': 'application/json'}, withCredentials: true});
+        const { data }= await axios.post(`${import.meta.env.VITE_BACKENT_URL}/api/generate-newtoken`,{},{headers:{'Content-Type': 'application/json'}, withCredentials: true});
       if (data.success) {
         setIsAuthenticated(true);
       }

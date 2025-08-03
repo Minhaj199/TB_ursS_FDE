@@ -50,7 +50,7 @@ client.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const { data }= await axios.post(`${import.meta.env.VITE_BACKENT_URL}api/generate-newtoken`,{},{headers:{'Content-Type': 'application/json'}, withCredentials: true});
+        const { data }= await axios.post(`${import.meta.env.VITE_BACKENT_URL}/api/generate-newtoken`,{},{headers:{'Content-Type': 'application/json'}, withCredentials: true});
         if ('success' in data&&data.success===true) {
           isRefreshing = false;
           onTokenRefreshed();
